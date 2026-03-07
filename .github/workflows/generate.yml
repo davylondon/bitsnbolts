@@ -151,5 +151,16 @@ jobs:
           echo "Deploying"
           uv run mkdocs gh-deploy --force
 
+      - name: Build static files
+        run: uv run mkdocs build # Creates the "site/" folder for rsync
 
+      - name: Deploy to VPS
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSHPRIVATEKEY }}
+          ARGS: "-avz --delete"
+          REMOTE_HOST: ${{ secrets.REMOTEHOST }}
+          REMOTE_USER: ${{ secrets.SSHUSERNAME }}
+          TARGET: "/var/www/bitsnbolts" 
+          SOURCE: "site/" 
          
